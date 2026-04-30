@@ -1,5 +1,7 @@
 # 📈 Olist Revenue Forecast
 
+🚀 **API em produção:** https://olist-revenue-forecast.onrender.com/docs
+
 Previsão de receita mensal para e-commerce brasileiro usando dados públicos da Olist.  
 Pipeline completo: SQL → EDA → Machine Learning → API REST.
 
