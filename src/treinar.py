@@ -1,7 +1,12 @@
 import pandas as pd
+
 from sklearn.ensemble import RandomForestRegressor
+
 from sklearn.linear_model import LinearRegression
+
 from sklearn.metrics import mean_absolute_error, mean_absolute_percentage_error
+
+from xgboost import XGBRegressor
 
 import joblib
 import os
@@ -34,7 +39,8 @@ print(f"Treino: {len(X_train)} meses | Teste: {len(X_test)} meses")
 
 modelos = {
     "RandomForest": RandomForestRegressor(n_estimators =100 , random_state=420),
-    "LinearRegression": LinearRegression()
+    "LinearRegression": LinearRegression(),
+    "XGBoost": XGBRegressor(n_estimators=100, random_state=42, verbosity = 0),
 }
 
 resultados = []
