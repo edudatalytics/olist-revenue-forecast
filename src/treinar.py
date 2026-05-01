@@ -1,5 +1,6 @@
 import pandas as pd
-
+import matplotlib.pyplot as plt
+import numpy as np
 from sklearn.ensemble import RandomForestRegressor
 
 from sklearn.linear_model import LinearRegression
@@ -70,3 +71,19 @@ melhor_modelo = modelos[melhor]
 joblib.dump(melhor_modelo, "models/modelo_receita.pkl")
 print(f"Modelo salvo em models/modelo_receita.pkl")
 
+# Feature Importance
+coef = pd.DataFrame({
+    "feature": FEATURES,
+    'importancia': np.abs(melhor_modelo.coef_)
+}).sort_values('importancia', ascending=True)
+
+plt.figure(figsize=(8, 4))
+plt.barh(coef['feature'], coef['importancia'], color ='#3498db', edgecolor ='black')
+plt.title(f'Feature importance - Linear Regression', fontweight='bold')
+plt.xlabel('Valor Absoluto do Coeficiente')
+plt.tight_layout()
+plt.savefig('graficos/feature_importance.png')
+plt.show()
+
+print("\nFeatures por importância:")
+print(coef.sort_values("importancia", ascending=False).to_string(index=False))

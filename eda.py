@@ -2,8 +2,13 @@
 import pandas as pd 
 import matplotlib.pyplot as plt
 import seaborn as sns
+
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.metrics import mean_absolute_error, mean_absolute_percentage_error
+
+
 # %%
-df = pd.read_csv("../data/abt_receita.csv")
+df = pd.read_csv("data/abt_receita.csv")
 
 print(df.shape)
 print(df.head())
@@ -85,4 +90,55 @@ plt.show()
 # - Ticket médio tem correlação quase nula com receita (-0.18)
 # - O modelo deve focar em prever volume de pedidos como proxy de receita
 # 
+
+# %% [markdown]
+# ## vamos iniciar a modelagem!
+# 
+# Como queremos pever valores vamos usar o modelo de regressao 
+# 
+# vamos usar a tecnica lag features, usando os valores do mes anterior para prever o mes atual 
+# 
+
+# %%
+# Criando lag features — valores do mês anterior para cada variável
+df['receita_lag1'] = df['receita_total'].shift(1)
+df['pedidos_lag1'] = df['total_pedidos'].shift(1)
+df['clientes_lag1'] = df['total_clientes'].shift(1)
+df['ticket_lag1'] = df['ticket_medio'].shift(1)
+
+# Removendo a primeira linha que agora tem valores nulos devido ao shift
+df =df.dropna().reset_index(drop=True)
+
+print(f'shepe após criação de lags: {df.shape}')
+print(df[['ano_mes', 'receita_total', 'receita_lag1', 'total_pedidos', 'pedidos_lag1', 'total_clientes', 'clientes_lag1', 'ticket_medio', 'ticket_lag1']].head())
+
+# %% [markdown]
+# O shift(1) "empurrou" os valores um mês para frente. Agora o modelo pode usar o que aconteceu em março para prever abril.
+# 
+
+# %%
+X = df[['receita_lag1', 'pedidos_lag1', 'clientes_lag1', 'ticket_lag1']]
+
+y = df['receita_total']
+
+print(f'X shape: {X.shape}')
+print(f'y shape: {y.shape}')
+print(X.head())
+
+
+# %% [markdown]
+# Vamos usar os primeiros 14 meses para treino e os últimos 3 para teste
+# 
+
+# %%
+X_train = X.iloc[:14]
+X_test = X.iloc[14:]
+
+y_train = y.iloc[:14]
+y_test = y.iloc[14:]
+
+print(f'Treino: {len(X_train)} meses')
+print(f'Teste: {len(X_test)} meses')
+print(f'\nMeses de teste: {df["ano_mes"].iloc[14:].values}')
+
 
